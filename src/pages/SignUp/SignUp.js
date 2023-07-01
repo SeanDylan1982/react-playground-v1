@@ -7,6 +7,7 @@ import { useIntl } from 'react-intl'
 import { useMenu } from 'material-ui-shell/lib/providers/Menu'
 import { useTheme } from '@mui/material/styles'
 import CustomPaper from '../../components/CustomPaper'
+import { v4 as uuid } from 'uuid';
 
 const SignUp = ({ redirectTo = '/' }) => {
   const intl = useIntl()
@@ -19,19 +20,29 @@ const SignUp = ({ redirectTo = '/' }) => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const { toggleThis } = useMenu()
   const { setAuth } = useAuth()
-
+  
   function handleSubmit(event) {
     event.preventDefault()
+    let id = uuid();
+    let newUserObj = {
+      id,
+      username,
+      userEmail,
+      password,
+    }
+    localStorage.setItem('User', JSON.stringify(newUserObj));
+    
     authenticate({
-      displayName: 'User',
-      email: username,
+      displayName: username,
+      email: userEmail,
     })
   }
+
 
   const authenticate = (user) => {
     setAuth({ isAuthenticated: true, ...user })
     toggleThis('isAuthMenuOpen', false)
-
+    
     let from = new URLSearchParams(location.search).get('from')
 
     if (from) {
@@ -41,6 +52,7 @@ const SignUp = ({ redirectTo = '/' }) => {
     }
   }
 
+  
   return (
     <Page
       pageTitle={intl.formatMessage({
